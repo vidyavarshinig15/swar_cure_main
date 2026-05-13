@@ -62,13 +62,13 @@ export default function MusicExplorer() {
     try {
       setLoading(true);
       
+      // Load all tracks
+      const allTracks = await musicApi.getAllMusicTracks();
+      setTracks(allTracks);
+
       // Load playlists
       const playlistsData = await musicApi.getPlaylists();
       setPlaylists(playlistsData);
-      
-      // Extract all tracks from playlists
-      const allTracks = playlistsData.flatMap(playlist => playlist.tracks);
-      setTracks(allTracks);
       
       // Set a default playlist
       if (playlistsData.length > 0) {
@@ -107,36 +107,33 @@ export default function MusicExplorer() {
     }
   };
   
-  const handleSearch = () => {
-    if (!searchQuery.trim()) {
-      // If search is cleared, reset to selected playlist's tracks
-      return selectedPlaylist?.tracks || [];
-    }
-    
-    const query = searchQuery.toLowerCase();
-    return tracks.filter(track => 
-      track.title.toLowerCase().includes(query) || 
-      track.artist.toLowerCase().includes(query) ||
-      track.benefits.some(b => b.toLowerCase().includes(query)) ||
-      track.category.toLowerCase().includes(query)
-    );
-  };
+
   
   const filterTracks = () => {
-    let filteredTracks = searchQuery ? handleSearch() : (selectedPlaylist?.tracks || []);
+    let tracksToFilter = searchQuery.trim() ? tracks : (selectedPlaylist?.tracks || []);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      tracksToFilter = tracksToFilter.filter(track => 
+        track.title.toLowerCase().includes(query) || 
+        track.artist.toLowerCase().includes(query) ||
+        track.benefits.some(b => b.toLowerCase().includes(query)) ||
+        track.category.toLowerCase().includes(query)
+      );
+    }
     
     // Apply category filter
     if (filterCategory !== 'all') {
-      filteredTracks = filteredTracks.filter(track => track.category === filterCategory);
+      tracksToFilter = tracksToFilter.filter(track => track.category === filterCategory);
     }
     
     // Apply frequency filter if tracks have frequency data
-    filteredTracks = filteredTracks.filter(track => 
+    tracksToFilter = tracksToFilter.filter(track => 
       !track.frequency || 
       (track.frequency >= frequencyRange[0] && track.frequency <= frequencyRange[1])
     );
     
-    return filteredTracks;
+    return tracksToFilter;
   };
   
   const displayedTracks = filterTracks();

@@ -1,3 +1,23 @@
+export interface Playlist {
+  id: string;
+  name: string;
+  description: string;
+  tracks: MusicTrack[];
+}
+
+export interface MusicTrack {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  coverImage: string;
+  duration: number; // in seconds
+  category: string;
+  frequency?: number; // in Hz
+  benefits: string[];
+  source: 'local' | 'spotify' | 'youtube';
+}
+
 // SwarCure API Service
 // This file contains all API service functions for the SwarCure wellness application
 
@@ -786,6 +806,78 @@ export const webhookHandlers = {
   },
 };
 
+export const musicApi = {
+  getAllMusicTracks: async (): Promise<MusicTrack[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          {
+            id: '1',
+            title: 'Classical Instrumental Sad Music',
+            artist: 'Unknown',
+            url: '/src/music/classical-instrumental-sad-music-300916.mp3',
+            coverImage: 'https://i.pravatar.cc/150?img=1',
+            duration: 180, // Example duration in seconds
+            category: 'Classical',
+            benefits: ['Relaxation', 'Mood Enhancement'],
+            source: 'local',
+          },
+          {
+            id: '2',
+            title: 'Indian Classical Flute & Tabla',
+            artist: 'Unknown',
+            url: '/src/music/indian-classical-flute-amp-tabla-140472.mp3',
+            coverImage: 'https://i.pravatar.cc/150?img=2',
+            duration: 240, // Example duration in seconds
+            category: 'Indian Classical',
+            benefits: ['Meditation', 'Focus'],
+            source: 'local',
+          },
+          {
+            id: '3',
+            title: 'Rainy Day Relaxation',
+            artist: 'Nature Sounds',
+            url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example external URL
+            coverImage: 'https://i.pravatar.cc/150?img=3',
+            duration: 200,
+            category: 'Nature Sounds',
+            benefits: ['Sleep', 'Stress Relief'],
+            source: 'youtube',
+          },
+        ]);
+      }, 500);
+    });
+  },
+
+  getPlaylists: async (): Promise<Playlist[]> => {
+    return new Promise(async (resolve) => {
+      const allTracks = await musicApi.getAllMusicTracks(); // Get all tracks to create playlists
+      setTimeout(() => {
+        resolve([
+          {
+            id: 'playlist-1',
+            name: 'Morning Meditation',
+            description: 'Calm sounds to start your day.',
+            tracks: [allTracks[1], allTracks[2]], // Indian Classical, Rainy Day
+          },
+          {
+            id: 'playlist-2',
+            name: 'Deep Focus',
+            description: 'Music to help you concentrate.',
+            tracks: [allTracks[0]], // Classical Instrumental
+          },
+          {
+            id: 'playlist-3',
+            name: 'Sleep Aid',
+            description: 'Relaxing tunes for a peaceful night.',
+            tracks: [allTracks[2], allTracks[0]], // Rainy Day, Classical Instrumental
+          },
+        ]);
+      }, 600);
+    });
+  },
+};
+
 export default {
   authApi,
   doctorsApi,
@@ -794,4 +886,5 @@ export default {
   notificationsApi,
   paymentApi,
   webhookHandlers,
+  musicApi,
 };
