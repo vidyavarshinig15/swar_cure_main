@@ -42,4 +42,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ⭐ **Star this repo if you believe in healing through music!** ⭐
 
 *Made with ❤️ for global mental wellness*
-# swar_cure
+
